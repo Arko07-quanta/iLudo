@@ -18,15 +18,22 @@ int player_type[4] = {0};
 void iDraw() {
 	if(gamestate == 0){
 		iClear();
-		iShowBMP(0,0,start_page);
+		iShowImage(0,0,&home);
+		iShowImage(1000,500,&newGame);
+		iShowImage(1000,440,&vsComp);
+		iShowImage(1000,380,&settings);
 	}
 	if(gamestate == 1){
 		iClear();
-		iShowBMP(0,0,start_page);
+		iShowImage(0,0,&home);
+		iShowImage(110,500,&Play2);
+		iShowImage(110,440,&Play4);
 	}
 	if(gamestate == 2){
 		iClear();
-		iShowBMP(0,0,start_page);
+		iShowImage(0,0,&home);
+		iShowImage(110,500,&Play2);
+		iShowImage(110,440,&Play4);
 	}
 	if(gamestate == 3){
 		if(flag == 0) {
@@ -55,10 +62,11 @@ void iDraw() {
 		display_move(a,ph);
 	}
 	if(gamestate == 5){
-		if(flag = 0){
+		if(flag == 0){
 			n = 4;
 			init(4);
 			player_type[0] = 1;
+			for(int i=1; i<4; i++) player_type[i] = 0;
 			flag = 1;
 		}
 		iClear();
@@ -71,6 +79,7 @@ void iDraw() {
 			n = 2;
 			init(2);
 			player_type[0] = 1;
+			player_type[3] = 0;
 			flag = 1;
 		}
 		iClear();
@@ -101,18 +110,22 @@ void iMouseMove(int mx, int my) {
 	*/
 void iMouse(int button, int state, int mx, int my) {
 	if(gamestate == 0){
-		if(button == GLUT_LEFT_BUTTON) gamestate = 1;
-		if(button == GLUT_RIGHT_BUTTON) gamestate = 2;
+		if(button == GLUT_LEFT_BUTTON) {
+			if(mx>=1000 && my>=500 && mx<=1250 && my<=550) gamestate = 1;
+		}
+		if(button == GLUT_LEFT_BUTTON){
+			if(mx>=1000 && mx<=1250 && my>=440 && my<=490) gamestate = 2;
+		}
 	}
-	if(gamestate == 1){
-		if(button == GLUT_LEFT_BUTTON) gamestate = 3;
-		if(button == GLUT_RIGHT_BUTTON) gamestate = 4;
+	else if(gamestate == 1){
+		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 500 && my <= 550) gamestate = 4;
+		if(button == GLUT_LEFT_BUTTON) if(mx >=110 && mx<=360 && my>=440 && my <= 490) gamestate = 3;
 	}
-	if(gamestate == 2){
-		if(button == GLUT_LEFT_BUTTON) gamestate = 5;
-		if(button == GLUT_RIGHT_BUTTON) gamestate = 6;
+	else if(gamestate == 2){
+		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 500 && my <= 550) gamestate = 6;
+		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 440 && my <= 490) gamestate = 5;
 	}
-	if(gamestate == 3 || gamestate == 4) {
+	else if(gamestate == 3 || gamestate == 4) {
 		while(!players[cur_player].active){
 			cur_player = (cur_player+1)%4;
 			ph = (ph+1)%4;
@@ -129,7 +142,7 @@ void iMouse(int button, int state, int mx, int my) {
 				}
 			}
 
-			if(button_state==1){
+			else if(button_state==1){
 				if(!check_valid_moves(cur_player,a)){
 					cur_player = (cur_player+1)%4;
 					ph = (ph+1)%4;
@@ -153,7 +166,7 @@ void iMouse(int button, int state, int mx, int my) {
 			}
 		}
 	}
-	if(gamestate == 5 || gamestate == 6) {
+	else if(gamestate == 5 || gamestate == 6) {
 		while(!players[cur_player].active){
 			cur_player = (cur_player+1)%4;
 			ph = (ph+1)%4;
@@ -222,7 +235,7 @@ void iMouse(int button, int state, int mx, int my) {
 			}
 		}
 	}
-	if(gamestate == 7){
+	else if(gamestate == 7){
 		if(button == GLUT_RIGHT_BUTTON){
 			//gamestate = 0;
 			cur_player = 0;

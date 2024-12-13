@@ -7,6 +7,7 @@ using namespace std;
 
 
 Image rolls[6];
+Image home, newGame, vsComp, Play2, Play4, settings, ext;
 
 void loadResources(){
     for(int i=0; i<6; i++){
@@ -14,6 +15,13 @@ void loadResources(){
     sprintf(num_str,"assets/dice_roll/%d.png",i+1);
     iLoadImage(&rolls[i],num_str);
     }
+    iLoadImage(&home, "assets/home.jpg");
+    iLoadImage(&newGame, "assets/game_buttons/newgame.png");
+    iLoadImage(&vsComp, "assets/game_buttons/vsComp.png");
+    iLoadImage(&Play2, "assets/game_buttons/2player.png");
+    iLoadImage(&Play4, "assets/game_buttons/4Player.png");
+    iLoadImage(&settings, "assets/game_buttons/settings.png");
+    iLoadImage(&ext, "assets/game_buttons/ext.png");
     return;
 }
 
@@ -273,6 +281,12 @@ int comp_move(int cur_player, int dice){
                 return 0;
             }
         }
+        int pi = rand()%4;
+        while(players[cur_player].cur_pos[pi]==0 && players[cur_player].cur_pos[pi]+dice>57){
+            pi = rand()%4;
+        }
+        player_move(cur_player,pi,dice);
+        return 0;
     }
     for(int i=0; i<4; i++){
         if(players[cur_player].cur_pos[i]+dice == 57){
