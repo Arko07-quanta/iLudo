@@ -7,7 +7,7 @@ using namespace std;
 
 
 Image rolls[6];
-Image home, newGame, vsComp, Play2, Play4, settings, ext;
+Image home, newGame, vsComp, Play2, Play4, settings, ext, snd_on, snd_off, back_button;
 
 void loadResources(){
     for(int i=0; i<6; i++){
@@ -22,6 +22,9 @@ void loadResources(){
     iLoadImage(&Play4, "assets/game_buttons/4Player.png");
     iLoadImage(&settings, "assets/game_buttons/settings.png");
     iLoadImage(&ext, "assets/game_buttons/ext.png");
+    iLoadImage(&snd_on, "assets/game_buttons/snd_on.png");
+    iLoadImage(&snd_off, "assets/game_buttons/snd_off.png");
+    iLoadImage(&back_button, "assets/game_buttons/back_button.png");
     return;
 }
 
@@ -179,7 +182,7 @@ int player_move(int cur_player, int pi, int dice){
         pos += dice;
         players[cur_player].cur_pos[pi] += dice;
         cells[players[cur_player].path[cur_player][pos]].piece.push_back(cur_player);
-        if(pos == 57) return 0;
+        if(pos == 57) return 2;
         return 1;
         //printf("player %d moved to : %lf %lf\n",cur_player, cells[players[cur_player].path[cur_player][pos]].x, cells[players[cur_player].path[cur_player][pos]].y);
     }

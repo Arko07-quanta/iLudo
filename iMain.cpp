@@ -8,6 +8,7 @@ int a,n;
 int flag = 0;
 int button_state = 0;
 int dice_cnt = 0;
+int snd_flag = 1;
 
 int player_type[4] = {0};
 
@@ -25,19 +26,19 @@ void iDraw() {
 		iShowImage(1000,440,&vsComp);
 		iShowImage(1000,380,&settings);
 	}
-	if(gamestate == 1){
+	else if(gamestate == 1){
 		iClear();
 		iShowImage(0,0,&home);
 		iShowImage(110,500,&Play2);
 		iShowImage(110,440,&Play4);
 	}
-	if(gamestate == 2){
+	else if(gamestate == 2){
 		iClear();
 		iShowImage(0,0,&home);
 		iShowImage(110,500,&Play2);
 		iShowImage(110,440,&Play4);
 	}
-	if(gamestate == 3){
+	else if(gamestate == 3){
 		if(flag == 0) {
 			n = 4;
 			init(4);
@@ -48,7 +49,7 @@ void iDraw() {
 		draw_state();
 		display_move(a,ph);
 	}
-	if(gamestate == 4){
+	else if(gamestate == 4){
 		if(flag == 0) {
 			n = 2;
 			init(2);
@@ -59,7 +60,7 @@ void iDraw() {
 		draw_state();
 		display_move(a,ph);
 	}
-	if(gamestate == 5){
+	else if(gamestate == 5){
 		if(flag == 0){
 			n = 4;
 			init(4);
@@ -72,7 +73,7 @@ void iDraw() {
 		draw_state();
 		display_move(a,ph);
 	}
-	if(gamestate == 6){
+	else if(gamestate == 6){
 		if(flag == 0){
 			n = 2;
 			init(2);
@@ -85,7 +86,7 @@ void iDraw() {
 		draw_state();
 		display_move(a,ph);
 	}
-	if(gamestate == 7){
+	else if(gamestate == 7){
 		iClear();
 		char winner[30];
 		if(win_list[0] == 0) strcpy(winner,"RED");
@@ -98,6 +99,12 @@ void iDraw() {
 		else if(win_list[0] == 2) iSetColor(255,255,0);
 		else iSetColor(0,0,255);
 		iText(850,350,winner,GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	else if(gamestate == 8) {
+		iShowBMP(0,0,game_background);
+		iShowImage2(10,720,&back_button, IGNC);
+		if(snd_flag) iShowImage2(100,400,&snd_on,IGNC);
+		else iShowImage2(100,400,&snd_off,IGNC);
 	}
 }
 
@@ -118,19 +125,22 @@ void iMouse(int button, int state, int mx, int my) {
 	//printf("%d\n",state);
 	//printf("%d %d %d\n",cur_player,ph, players[cur_player].active);
 	if(gamestate == 0){
-		if(button == GLUT_LEFT_BUTTON) {
+		if(button == GLUT_LEFT_BUTTON ) {
 			if(mx>=1000 && my>=500 && mx<=1250 && my<=550) gamestate = 1;
 		}
-		if(button == GLUT_LEFT_BUTTON){
+		if(button == GLUT_LEFT_BUTTON ){
 			if(mx>=1000 && mx<=1250 && my>=440 && my<=490) gamestate = 2;
+		}
+		if(button == GLUT_LEFT_BUTTON){
+			if(mx >= 1000 && mx <= 1250 && my >= 380 && my<=430) gamestate = 8;
 		}
 	}
 	else if(gamestate == 1){
-		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 500 && my <= 550) gamestate = 4;
-		if(button == GLUT_LEFT_BUTTON) if(mx >=110 && mx<=360 && my>=440 && my <= 490) gamestate = 3;
+		if(button == GLUT_LEFT_BUTTON ) if(mx>=110 && mx<=360 && my >= 500 && my <= 550) gamestate = 4;
+		if(button == GLUT_LEFT_BUTTON ) if(mx >=110 && mx<=360 && my>=440 && my <= 490) gamestate = 3;
 	}
 	else if(gamestate == 2){
-		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 500 && my <= 550) {
+		if(button == GLUT_LEFT_BUTTON && state ==  GLUT_UP) if(mx>=110 && mx<=360 && my >= 500 && my <= 550) {
 			gamestate = 6;
 			n = 2;
 			init(2);
@@ -139,7 +149,7 @@ void iMouse(int button, int state, int mx, int my) {
 			player_type[1] = player_type[3] = 1;
 			flag = 1;
 		}
-		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 440 && my <= 490) {
+		if(button == GLUT_LEFT_BUTTON ) if(mx>=110 && mx<=360 && my >= 440 && my <= 490) {
 			gamestate = 5;
 			n = 4;
 			init(4);
@@ -153,7 +163,7 @@ void iMouse(int button, int state, int mx, int my) {
 			ph = (ph+1)%4;
 			cur_player = (cur_player+1)%4;
 		}
-		if(button == GLUT_LEFT_BUTTON){
+		if(button == GLUT_LEFT_BUTTON ){
 			if(button_state == 0){
 				while(players[ph].active == 0){
 					ph = (ph+1)%4;
@@ -179,7 +189,7 @@ void iMouse(int button, int state, int mx, int my) {
 				if(pi != -1){
 					int x = collision_check(cur_player, pi, a);
 					int y = player_move(cur_player,pi,a);
-					if(y==1) button_state = 0;
+					if(y==1 || y==2) button_state = 0;
 					if(is_winner(cur_player)) {
 						win_list.push_back(cur_player);
 						players[cur_player].active = 0;
@@ -218,6 +228,11 @@ void iMouse(int button, int state, int mx, int my) {
 				}
 			}
 			int x = comp_move(cur_player,a);
+			if(is_winner(cur_player)) {
+				win_list.push_back(cur_player);
+				players[cur_player].active = 0;
+			}
+			if(win_list.size() == n-1) gamestate = 7;
 			if(x == 1){
 				cur_player = (cur_player+1)%4;
 				ph = (ph+1)%4;
@@ -226,18 +241,13 @@ void iMouse(int button, int state, int mx, int my) {
 					cur_player = (cur_player+1)%4;
 				}
 			}
-			if(is_winner(cur_player)) {
-				win_list.push_back(cur_player);
-				players[cur_player].active = 0;
-			}
-			if(win_list.size() == n-1) gamestate = 7;
 		}
 		else if (player_type[cur_player]){
 			while(players[ph].active == 0){
 				cur_player = (cur_player+1)%4;
 				ph = (ph+1)%4;
 			}
-			if(button == GLUT_LEFT_BUTTON){
+			if(button == GLUT_LEFT_BUTTON ){
 				if(button_state == 0){
 					while(players[ph].active == 0){
 						ph = (ph+1)%4;
@@ -302,6 +312,16 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 		for(int i=0; i<4; i++) player_type[i] = 0;
 		//gamestate = 0;
+	}
+	else if(gamestate == 8){
+		if(button == GLUT_LEFT_BUTTON && state == GLUT_UP){
+			if(mx >= 10 && mx <= 40 && my >= 720 && my <= 750) gamestate = 0;
+			else if(mx >= 100 && mx <= 350 && my >= 400 && my <= 650) {
+				snd_flag ^= 1;
+				if(snd_flag) PlaySound(TEXT("assets\\3B1B.wav"),NULL,SND_ASYNC|SND_LOOP);
+				else PlaySound(0,0,0);
+			}
+		}
 	}
 }
 
