@@ -166,7 +166,16 @@ int player_move(int cur_player, int pi, int dice){
         }
     }
     else if(pos+dice<=57){
-        if(!cells[players[cur_player].path[pi][pos]].piece.empty()) cells[players[cur_player].path[pi][pos]].piece.erase(find(cells[players[cur_player].path[pi][pos]].piece.begin(), cells[players[cur_player].path[pi][pos]].piece.end(),cur_player));
+        if(!cells[players[cur_player].path[pi][pos]].piece.empty()) {
+           auto it = cells[players[cur_player].path[pi][pos]].piece.begin();
+           while(it != cells[players[cur_player].path[pi][pos]].piece.end()){
+            if(*it == cur_player){
+                cells[players[cur_player].path[pi][pos]].piece.erase(it);
+                break;
+            }
+            it++;
+           }
+        }
         pos += dice;
         players[cur_player].cur_pos[pi] += dice;
         cells[players[cur_player].path[cur_player][pos]].piece.push_back(cur_player);
@@ -200,8 +209,14 @@ int collision_check(int cur_player, int pi, int dice){
     return 0;
 }
 
-int roll_dice(){
+int roll_dice(int &dice_cnt){
     int a = rand()%6 + 1;
+    if(a != 6) dice_cnt = 0;
+    else if(a==6) dice_cnt++;
+    while(dice_cnt>=3){
+        a = rand()%6+1;
+        if(a != 6) dice_cnt = 0;
+    }
     return a;
 }
 

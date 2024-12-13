@@ -7,6 +7,7 @@ int ph = 0;
 int a,n;
 int flag = 0;
 int button_state = 0;
+int dice_cnt = 0;
 
 int player_type[4] = {0};
 
@@ -96,7 +97,7 @@ void iDraw() {
 		else if(win_list[0] == 1) iSetColor(0,255,0);
 		else if(win_list[0] == 2) iSetColor(255,255,0);
 		else iSetColor(0,0,255);
-		iText(800,350,winner,GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(850,350,winner,GLUT_BITMAP_TIMES_ROMAN_24);
 	}
 }
 
@@ -114,8 +115,8 @@ void iMouseMove(int mx, int my) {
 	(mx, my) is the position where the mouse pointer is.
 	*/
 void iMouse(int button, int state, int mx, int my) {
-
-	printf("%d %d %d\n",cur_player,ph, players[cur_player].active);
+	//printf("%d\n",state);
+	//printf("%d %d %d\n",cur_player,ph, players[cur_player].active);
 	if(gamestate == 0){
 		if(button == GLUT_LEFT_BUTTON) {
 			if(mx>=1000 && my>=500 && mx<=1250 && my<=550) gamestate = 1;
@@ -129,8 +130,23 @@ void iMouse(int button, int state, int mx, int my) {
 		if(button == GLUT_LEFT_BUTTON) if(mx >=110 && mx<=360 && my>=440 && my <= 490) gamestate = 3;
 	}
 	else if(gamestate == 2){
-		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 500 && my <= 550) gamestate = 6;
-		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 440 && my <= 490) gamestate = 5;
+		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 500 && my <= 550) {
+			gamestate = 6;
+			n = 2;
+			init(2);
+			player_type[0] = 1;
+			player_type[2] = 0;
+			player_type[1] = player_type[3] = 1;
+			flag = 1;
+		}
+		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 440 && my <= 490) {
+			gamestate = 5;
+			n = 4;
+			init(4);
+			player_type[0] = 1;
+			for(int i=1; i<4; i++) player_type[i] = 0;
+			flag = 1;
+		}
 	}
 	else if(gamestate == 3 || gamestate == 4) {
 		while(players[ph].active == 0){
@@ -144,7 +160,7 @@ void iMouse(int button, int state, int mx, int my) {
 					cur_player = (cur_player+1)%4;
 				}
 				if(place_holder[ph].first<=mx && place_holder[ph].second<=my && place_holder[ph].first+CELL_SIZE>mx && place_holder[ph].second+CELL_SIZE>my){
-					a = roll_dice();
+					a = roll_dice(dice_cnt);
 					button_state = 1;
 				}
 			}
@@ -191,7 +207,7 @@ void iMouse(int button, int state, int mx, int my) {
 				cur_player = (cur_player+1)%4;
 				ph = (ph+1)%4;
 			}
-			a = roll_dice();
+			a = roll_dice(dice_cnt);
 			//Sleep(100);
 			if(!check_valid_moves(cur_player,a)){
 				cur_player = (cur_player+1)%4;
@@ -216,7 +232,7 @@ void iMouse(int button, int state, int mx, int my) {
 			}
 			if(win_list.size() == n-1) gamestate = 7;
 		}
-		else{
+		else if (player_type[cur_player]){
 			while(players[ph].active == 0){
 				cur_player = (cur_player+1)%4;
 				ph = (ph+1)%4;
@@ -228,7 +244,7 @@ void iMouse(int button, int state, int mx, int my) {
 						cur_player = (cur_player+1)%4;
 					}
 					if(place_holder[ph].first<=mx && place_holder[ph].second<=my && place_holder[ph].first+CELL_SIZE>mx && place_holder[ph].second+CELL_SIZE>my){
-						a = roll_dice();
+						a = roll_dice(dice_cnt);
 						button_state = 1;
 					}
 				}
@@ -252,7 +268,7 @@ void iMouse(int button, int state, int mx, int my) {
 							win_list.push_back(cur_player);
 							players[cur_player].active = 0;
 						}
-						if(win_list.size() == n-1) gamestate = 3;
+						if(win_list.size() == n-1) gamestate = 7;
 						if(x == 0 && a != 6 && y==1){
 							cur_player = (cur_player+1)%4;
 							ph = (ph+1)%4;
@@ -267,8 +283,8 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 	}
 	else if(gamestate == 7){
-		if(button == GLUT_LEFT_BUTTON){
-			//gamestate = 0;
+		if(button == GLUT_RIGHT_BUTTON){
+			gamestate = 0;
 			cur_player = 0;
 			ph = 0;
 			flag = 0;
@@ -285,7 +301,7 @@ void iMouse(int button, int state, int mx, int my) {
 			}
 		}
 		for(int i=0; i<4; i++) player_type[i] = 0;
-		gamestate = 0;
+		//gamestate = 0;
 	}
 }
 
@@ -335,7 +351,7 @@ void iPassiveMouseMove(int mx, int my){
 
 
 int main() {
-	PlaySound("assets/3B1B.wav",NULL,SND_ASYNC|SND_LOOP|SND_FILENAME);
+	PlaySound(TEXT("assets\\3B1B.wav"),NULL,SND_ASYNC|SND_LOOP);
 	srand(time((NULL)));
 	loadResources();
 	//place your own initialization codes here.
