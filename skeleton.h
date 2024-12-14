@@ -317,7 +317,6 @@ int comp_move(int cur_player, int dice){
             return 0;
         }
     }
-
     int pi = rand()%4;
     while(players[cur_player].cur_pos[pi]==0 && players[cur_player].cur_pos[pi]+dice>57){
         pi = rand()%4;

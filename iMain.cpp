@@ -99,7 +99,7 @@ void iDraw() {
 		else if(win_list[0] == 1) iSetColor(0,255,0);
 		else if(win_list[0] == 2) iSetColor(255,255,0);
 		else iSetColor(0,0,255);
-		iText(790,350,winner,GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(770,350,winner,GLUT_BITMAP_TIMES_ROMAN_24);
 	}
 	else if(gamestate == 8) {
 		iShowBMP(0,0,game_background);
