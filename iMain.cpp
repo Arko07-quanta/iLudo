@@ -1,5 +1,6 @@
 # include "skeleton.h"
 
+
 int gamestate = 0;
 int cur_player = 0;
 int ph = 0;
@@ -38,9 +39,7 @@ void iDraw() {
 	if(gamestate == 3){
 		if(flag == 0) {
 			n = 4;
-			for(int pl=0; pl<4; pl++) player_type[pl] = 1;
 			init(4);
-			cur_player = 0;
 			flag = 1;
 		}
 		iClear();
@@ -52,8 +51,6 @@ void iDraw() {
 		if(flag == 0) {
 			n = 2;
 			init(2);
-			player_type[0] = 1, player_type[2] = 1;
-			cur_player = 0;
 			flag = 1;
 		}
 		iClear();
@@ -79,7 +76,7 @@ void iDraw() {
 			n = 2;
 			init(2);
 			player_type[0] = 1;
-			player_type[3] = 0;
+			player_type[2] = 0;
 			flag = 1;
 		}
 		iClear();
@@ -90,8 +87,16 @@ void iDraw() {
 	if(gamestate == 7){
 		iClear();
 		char winner[30];
-		sprintf(winner,"The winner is %d",win_list[0]);
-		iText(650,350,winner,GLUT_BITMAP_TIMES_ROMAN_24);
+		if(win_list[0] == 0) strcpy(winner,"RED");
+		else if(win_list[0] == 1) strcpy(winner, "GREEN");
+		else if(win_list[0] == 2) strcpy(winner, "YELLOW");
+		else strcpy(winner, "BLUE");
+		iText(650,350,"The winner is Player ",GLUT_BITMAP_TIMES_ROMAN_24);
+		if(win_list[0] == 0) iSetColor(255,0,0);
+		else if(win_list[0] == 1) iSetColor(0,255,0);
+		else if(win_list[0] == 2) iSetColor(255,255,0);
+		else iSetColor(0,0,255);
+		iText(800,350,winner,GLUT_BITMAP_TIMES_ROMAN_24);
 	}
 }
 
@@ -109,6 +114,8 @@ void iMouseMove(int mx, int my) {
 	(mx, my) is the position where the mouse pointer is.
 	*/
 void iMouse(int button, int state, int mx, int my) {
+
+	printf("%d %d %d\n",cur_player,ph, players[cur_player].active);
 	if(gamestate == 0){
 		if(button == GLUT_LEFT_BUTTON) {
 			if(mx>=1000 && my>=500 && mx<=1250 && my<=550) gamestate = 1;
@@ -126,13 +133,13 @@ void iMouse(int button, int state, int mx, int my) {
 		if(button == GLUT_LEFT_BUTTON) if(mx>=110 && mx<=360 && my >= 440 && my <= 490) gamestate = 5;
 	}
 	else if(gamestate == 3 || gamestate == 4) {
-		while(!players[cur_player].active){
-			cur_player = (cur_player+1)%4;
+		while(players[ph].active == 0){
 			ph = (ph+1)%4;
+			cur_player = (cur_player+1)%4;
 		}
 		if(button == GLUT_LEFT_BUTTON){
 			if(button_state == 0){
-				if(players[cur_player].active == 0){
+				while(players[ph].active == 0){
 					ph = (ph+1)%4;
 					cur_player = (cur_player+1)%4;
 				}
@@ -146,6 +153,10 @@ void iMouse(int button, int state, int mx, int my) {
 				if(!check_valid_moves(cur_player,a)){
 					cur_player = (cur_player+1)%4;
 					ph = (ph+1)%4;
+					while(players[ph].active == 0){
+						cur_player = (cur_player+1)%4;
+						ph = (ph+1)%4;
+					}
 					button_state = 0;
 				}
 				int pi = get_piece(mx,my,cur_player);
@@ -161,18 +172,22 @@ void iMouse(int button, int state, int mx, int my) {
 					if(x == 0 && a != 6 && y==1){
 						cur_player = (cur_player+1)%4;
 						ph = (ph+1)%4;
+						while(players[ph].active == 0){
+							cur_player = (cur_player+1)%4;
+							ph = (ph+1)%4;
+						}
 					}
 				}
 			}
 		}
 	}
 	else if(gamestate == 5 || gamestate == 6) {
-		while(!players[cur_player].active){
+		while(players[ph].active == 0){
 			cur_player = (cur_player+1)%4;
 			ph = (ph+1)%4;
 		}
 		if(!player_type[cur_player]){
-			if(players[cur_player].active == 0){
+			while(players[ph].active == 0){
 				cur_player = (cur_player+1)%4;
 				ph = (ph+1)%4;
 			}
@@ -181,11 +196,19 @@ void iMouse(int button, int state, int mx, int my) {
 			if(!check_valid_moves(cur_player,a)){
 				cur_player = (cur_player+1)%4;
 				ph = (ph+1)%4;
+				while(players[ph].active == 0){
+					ph = (ph+1)%4;
+					cur_player = (cur_player + 1) %4;
+				}
 			}
 			int x = comp_move(cur_player,a);
-			if(x){
+			if(x == 1){
 				cur_player = (cur_player+1)%4;
 				ph = (ph+1)%4;
+				while(players[ph].active == 0){
+					ph = (ph+1)%4;
+					cur_player = (cur_player+1)%4;
+				}
 			}
 			if(is_winner(cur_player)) {
 				win_list.push_back(cur_player);
@@ -194,13 +217,13 @@ void iMouse(int button, int state, int mx, int my) {
 			if(win_list.size() == n-1) gamestate = 7;
 		}
 		else{
-			if(players[cur_player].active == 0){
+			while(players[ph].active == 0){
 				cur_player = (cur_player+1)%4;
 				ph = (ph+1)%4;
 			}
 			if(button == GLUT_LEFT_BUTTON){
 				if(button_state == 0){
-					if(players[cur_player].active == 0){
+					while(players[ph].active == 0){
 						ph = (ph+1)%4;
 						cur_player = (cur_player+1)%4;
 					}
@@ -214,6 +237,10 @@ void iMouse(int button, int state, int mx, int my) {
 					if(!check_valid_moves(cur_player,a)){
 						cur_player = (cur_player+1)%4;
 						ph = (ph+1)%4;
+						while(players[ph].active == 0){
+							cur_player = (cur_player+1)%4;
+							ph = (ph+1)%4;
+						}
 						button_state = 0;
 					}
 					int pi = get_piece(mx,my,cur_player);
@@ -229,6 +256,10 @@ void iMouse(int button, int state, int mx, int my) {
 						if(x == 0 && a != 6 && y==1){
 							cur_player = (cur_player+1)%4;
 							ph = (ph+1)%4;
+							while(players[ph].active == 0){
+								ph = (ph+1)%4;
+								cur_player = (cur_player+1)%4;
+							}
 						}
 					}
 				}
@@ -236,7 +267,7 @@ void iMouse(int button, int state, int mx, int my) {
 		}
 	}
 	else if(gamestate == 7){
-		if(button == GLUT_RIGHT_BUTTON){
+		if(button == GLUT_LEFT_BUTTON){
 			//gamestate = 0;
 			cur_player = 0;
 			ph = 0;
@@ -304,6 +335,7 @@ void iPassiveMouseMove(int mx, int my){
 
 
 int main() {
+	PlaySound("assets/3B1B.wav",NULL,SND_ASYNC|SND_LOOP|SND_FILENAME);
 	srand(time((NULL)));
 	loadResources();
 	//place your own initialization codes here.

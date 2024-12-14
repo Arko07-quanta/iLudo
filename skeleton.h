@@ -136,10 +136,12 @@ void init(int n){
     }
     if(n==3){
         for(int i=0; i<3; i++) players[i].active = 1;
+        players[3].active = 0;
         for(int i=0; i<12; i++) cells[i].piece.push_back(i/4);
     }
     if(n==2) {
         players[0].active = 1, players[2].active = 1;
+        players[1].active = 0, players[3].active = 0;
         for(int i=0; i<4; i++) cells[i].piece.push_back(0);
         for(int i=8; i<12; i++) cells[i].piece.push_back(2);
     }
@@ -268,6 +270,7 @@ int check_valid_moves(int cur_player, int a){
 
 
 int comp_move(int cur_player, int dice){
+    printf("Player %d played his move/\n",cur_player);
     for(int i=0; i<4; i++){
         if(collision_check(cur_player, i, dice)){
             player_move(cur_player, i, dice);
