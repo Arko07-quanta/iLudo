@@ -134,15 +134,18 @@ void init(int n){
     for(int i=0; i<4; i++) players[3].path[i][57] = 91;
 
     if(n==4) {
+        for(int i=0; i<4; i++) for(int j=0; j<4; j++) players[i].cur_pos[j] = 0;
         for(int i=0; i<4; i++) players[i].active = 1;
         for(int i=0; i<16; i++) cells[i].piece.push_back(i/4);
     }
     if(n==3){
+        for(int i=0; i<4; i++) for(int j=0; j<4; j++) players[i].cur_pos[j] = 0;
         for(int i=0; i<3; i++) players[i].active = 1;
         players[3].active = 0;
         for(int i=0; i<12; i++) cells[i].piece.push_back(i/4);
     }
     if(n==2) {
+        for(int i=0; i<4; i++) for(int j=0; j<4; j++) players[i].cur_pos[j] = 0;
         players[0].active = 1, players[2].active = 1;
         players[1].active = 0, players[3].active = 0;
         for(int i=0; i<4; i++) cells[i].piece.push_back(0);
@@ -182,7 +185,6 @@ int player_move(int cur_player, int pi, int dice){
         pos += dice;
         players[cur_player].cur_pos[pi] += dice;
         cells[players[cur_player].path[cur_player][pos]].piece.push_back(cur_player);
-        if(pos == 57) return 2;
         return 1;
         //printf("player %d moved to : %lf %lf\n",cur_player, cells[players[cur_player].path[cur_player][pos]].x, cells[players[cur_player].path[cur_player][pos]].y);
     }
@@ -288,7 +290,7 @@ int check_valid_moves(int cur_player, int a){
 
 
 int comp_move(int cur_player, int dice){
-    printf("Player %d played his move/\n",cur_player);
+    printf("Player %d played his move\n",cur_player);
     for(int i=0; i<4; i++){
         if(collision_check(cur_player, i, dice)){
             player_move(cur_player, i, dice);
