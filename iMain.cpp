@@ -9,6 +9,7 @@ int flag = 0;
 int button_state = 0;
 int dice_cnt = 0;
 int snd_flag = 1;
+int pre_gamestate;
 
 int player_type[4] = {0};
 
@@ -108,6 +109,16 @@ void iDraw() {
 		char ins[100] = "Press b to get back to main menu during games.";
 		iSetColor(200,200,200);
 		iText(100,300,ins,GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(100,250,"Press p to pause the game.",GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(100,200,"Press r to resume the game.",GLUT_BITMAP_TIMES_ROMAN_24);
+	}
+	else if(gamestate == 9){
+		drawBoard();
+		iSetColor(10,10,10);
+		iFilledRectangle(500,375,250,100);
+		iSetColor(200,200,200);
+		iText(525,450,"Game Paused",GLUT_BITMAP_TIMES_ROMAN_24);
+		iText(525,400,"Press r to continue",GLUT_BITMAP_TIMES_ROMAN_24);
 	}
 }
 
@@ -364,6 +375,13 @@ void iKeyboard(unsigned char key) {
 			players[i].active = 0;
 		}
 		for(int i=0; i<4; i++) player_type[i] = 0;
+	}
+	if(key == 'p'){
+		if(gamestate != 9) pre_gamestate = gamestate;
+		gamestate = 9;
+	}
+	if(key == 'r'){
+		gamestate = pre_gamestate;
 	}
 	if (key == 'q') {
 		exit(0);
