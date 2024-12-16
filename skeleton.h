@@ -6,6 +6,9 @@ using namespace std;
 #define IGNC 16777215
 
 
+int timer;
+
+
 Image rolls[6];
 Image home, newGame, vsComp, Play2, Play4, settings, ext, snd_on, snd_off, back_button;
 
@@ -246,6 +249,9 @@ int is_winner(int n){
     return 1;
 }
 
+
+
+
 void display_move(int a, int ph){
     for(int i=0; i<6; i++){
         iShowImage(place_holder[ph].first, place_holder[ph].second,&rolls[i]);
@@ -317,6 +323,7 @@ int comp_move(int cur_player, int dice){
             return 0;
         }
     }
+    srand(time(NULL));
     int pi = rand()%4;
     while(players[cur_player].cur_pos[pi]==0 && players[cur_player].cur_pos[pi]+dice>57){
         pi = rand()%4;
@@ -325,3 +332,16 @@ int comp_move(int cur_player, int dice){
     return 1;
 }
 
+
+
+
+// void increaser(){
+// 	if(timer < 1000000)
+// 		timer++;
+//     printf("%d", timer);
+// }
+
+
+// void re_set(){
+// 	timer = 0;
+// }

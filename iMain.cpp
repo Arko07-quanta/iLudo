@@ -11,7 +11,8 @@ int dice_cnt = 0;
 int snd_flag = 1;
 int pre_gamestate;
 
-int player_type[4] = {0};
+
+int player_type[4] = {1,0,0,0};
 
 
 
@@ -65,7 +66,6 @@ void iDraw() {
 		if(flag == 0){
 			n = 4;
 			init(4);
-			player_type[0] = 1;
 			for(int i=1; i<4; i++) player_type[i] = 0;
 			flag = 1;
 		}
@@ -78,8 +78,6 @@ void iDraw() {
 		if(flag == 0){
 			n = 2;
 			init(2);
-			player_type[0] = 1;
-			player_type[2] = 0;
 			flag = 1;
 		}
 		iClear();
@@ -158,17 +156,12 @@ void iMouse(int button, int state, int mx, int my) {
 			gamestate = 6;
 			n = 2;
 			init(2);
-			player_type[0] = 1;
-			player_type[2] = 0;
-			player_type[1] = player_type[3] = 1;
 			flag = 1;
 		}
 		if(button == GLUT_LEFT_BUTTON ) if(mx>=110 && mx<=360 && my >= 440 && my <= 490) {
 			gamestate = 5;
 			n = 4;
 			init(4);
-			player_type[0] = 1;
-			for(int i=1; i<4; i++) player_type[i] = 0;
 			flag = 1;
 		}
 	}
@@ -257,7 +250,7 @@ void iMouse(int button, int state, int mx, int my) {
 					if(pi != -1){
 						int x = collision_check(cur_player, pi, a);
 						int y = player_move(cur_player,pi,a);
-						if(y==1) button_state = 0;
+						if(y==1 || y==2) button_state = 0;
 						if(is_winner(cur_player)) {
 							win_list.push_back(cur_player);
 							players[cur_player].active = 0;
@@ -380,6 +373,16 @@ void iKeyboard(unsigned char key) {
 		if(gamestate != 9) pre_gamestate = gamestate;
 		gamestate = 9;
 	}
+	if(key == 'd'){
+		if(button_state == 0){
+			while(players[ph].active == 0){
+				ph = (ph+1)%4;
+				cur_player = (cur_player+1)%4;
+			}
+			a = roll_dice(dice_cnt);
+			button_state = 1;
+		}
+	}
 	if(key == 'r'){
 		gamestate = pre_gamestate;
 	}
@@ -412,7 +415,7 @@ void iPassiveMouseMove(int mx, int my){
 
 
 int main() {
-	PlaySound(TEXT("assets\\3B1B.wav"),NULL,SND_ASYNC|SND_LOOP);
+	if(snd_flag) PlaySound(TEXT("assets\\3B1B.wav"),NULL,SND_ASYNC|SND_LOOP);
 	srand(time((NULL)));
 	loadResources();
 	//place your own initialization codes here.
